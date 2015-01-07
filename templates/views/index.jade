@@ -161,7 +161,7 @@ block content
                   div(data-bind="foreach: {data: station.availableDevices, as: 'availableDevice'}")
                     li
                       small
-                        span(data-bind="click: availableDeviceClick.bind($data, availableDevice, $parents[1].settings.devices || [], $parents[1].settings.macaddress)") {{availableDevice.name}}
+                        span(data-bind="click: availableDeviceClick.bind($data, availableDevice, station.settings.devices || [], station.settings.macaddress)") {{availableDevice.name}}
               // /ko
               dt Roles
               dd(data-bind="with: {roles: station.settings.roles || [], macaddress: station.settings.macaddress()}")
