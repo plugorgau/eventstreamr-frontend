@@ -15,7 +15,7 @@ router.get('/', function(req, res) {
   });
 });
 
-router.get('/station/:id', function(req, res, next) {
+router.get('/:id', function(req, res, next) {
   var query = {};
   var tableInfo = tablesDocLookups.station;
   query[tableInfo.key] = req.params.id;
