@@ -53,53 +53,30 @@ var statusArray = function(options) {
   return statusArray;
 };
 
-var availableDevices = function(options) {
-  // can later make this observable to prevent updating the full interface (push, match station, update just devices)
-  // return array based on options.data.devices with options.data.settings.devices removed
+var availableDevices = function(station) {
   
-  // create array based on options.data.devices
-  var devicesArray = [];
-  for( var i in options.data.devices ) {
-    if (options.data.devices.hasOwnProperty(i)){
-      devicesArray.push(options.data.devices[i]);
-    }
-  }
+  var allDevices = station.devices;
+  var configuredDevices = station.settings.devices || [];
+  configuredDevices = configuredDevices.map(function(item) {
+    return item.id;
+  });
   
-  if (options.data.settings.devices == "all") {
-    return devicesArray;
-  }
-  else {
-    // filter devicesArray to remove matchs from options.data.settings.devices
-    var configured;
-    if (options.data.settings.devices) {
-      configured = options.data.settings.devices;
-    }
-    else {
-      configured = [];
-    }
-    var unselectedDevices = devicesArray.filter(function(element) {
-      // loop through configured and look for matching id
-      var match = true;
-      for (var i in configured) {
-        if (configured[i].id == element.id) {
-          match = false;
-        }
-      }
-      return match;
-    });
-    
-    return unselectedDevices;
-  }
+  var availableDevices = allDevices.filter(function(item) {
+      return configuredDevices.indexOf(item.id) == -1;
+  });
+  
+  return availableDevices;
 };
 
 var mapping = {
-  create: function(options) {
+  update: function(options) {
     var innerModel = ko.mapping.fromJS(options.data);
-
+    
+    
     // availableDevices
     if (options.data.devices) {
       try {
-        innerModel.availableDevices = availableDevices(options);
+        innerModel.availableDevices = availableDevices(options.data);
       }
       catch(err) {
         console.log(err);
@@ -147,20 +124,21 @@ $.get( "/api/station", function( data ) {
     socket.on('change', function (data) {
       console.log(data);
       if (data.type == 'remove') {
-        vm.stations.remove(function(item) { 
-          return item._id() == data.content;
-        });
+        vm.stations.mappedRemove({id: data.content._id});
       }
       if (data.type == 'insert') {
         vm.stations.push(ko.mapping.fromJS(data.content, mapping));
       }
       if (data.type == 'update') {
-        var match = ko.utils.arrayFirst(vm.stations(), function(item) {
-          return data.content._id === item._id();
+        var match = ko.utils.arrayFirst(vm.stations(), function (item) {
+            return item._id() == data.content._id;
         });
-        if (match) {
-          ko.mapping.fromJS(data.content, mapping, match);
-        }
+        vm.stations.splice(
+          vm.stations.indexOf(match),
+          1,
+          ko.mapping.fromJS(data.content, mapping)
+        );
+
       }
       if (data.type == 'notify') {
       }
@@ -169,15 +147,16 @@ $.get( "/api/station", function( data ) {
   });
 
 var removeDevice = function (configuredDevices, macaddress, id) {
-
-  console.log(macaddress, configuredDevices, id);
-
+  var update = ko.toJS(configuredDevices).filter(function(device) {
+    return device.id !== id;
+  });
+  
   $.ajax({
-    url: "/api/stations/"+ macaddress + '/partial',
+    url: "/api/station/"+ macaddress + '/partial',
     type: 'POST',
     data: {
       key: 'settings.devices',
-      value: configuredDevices
+      value: update
     }
   })
     .done(function(id) {
@@ -198,7 +177,7 @@ var availableDeviceClick = function (item, configured, macaddress) {
   post.value = devices;
   
   $.ajax({
-    url: '/api/stations/' + macaddress() + '/partial',
+    url: '/api/station/' + macaddress() + '/partial',
     type: 'POST',
     data: post 
   });
@@ -278,7 +257,7 @@ var removeStation = function(data, event) {
 
 var removeStationRoom = function(data, event) {
   $.ajax({
-    url: "/api/stations/"+ data.settings.macaddress()  + '/partial',
+    url: "/api/station/"+ data.settings.macaddress()  + '/partial',
     type: 'POST',
     data: {
       key: 'settings.room',

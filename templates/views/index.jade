@@ -78,7 +78,7 @@ block content
             a.btn.btn-default(data-bind="click: actionStationManager.bind($data, $data.settings.macaddress(), 'reboot')") Reboot
           div(data-bind="with: {nickname: $data.settings.nickname || '', macaddress: $data.settings.macaddress() } ")
             h3.panel-title
-              span(data-bind="editable: nickname, editableOptions: {pk: 'unused', name: 'unused', url: '/api/stations/' + macaddress + '/partial', params: {key: 'settings.nickname'}}")
+              span(data-bind="editable: nickname, editableOptions: {pk: 'unused', name: 'unused', url: '/api/station/' + macaddress + '/partial', params: {key: 'settings.nickname'}}")
         .panel-body
 
           dl(data-bind="with: {more: ko.observable(false)}")
@@ -87,47 +87,47 @@ block content
                 span(data-bind="text: (more() ? 'Show less' : 'Show more')")
               | Room
             dd
-              div(data-bind="editable: station.settings.room, editableOptions: {pk: 'unused', name: 'unused', url: '/api/stations/' + station.settings.macaddress() + '/partial', params: {key: 'settings.room'}}")
+              div(data-bind="editable: station.settings.room, editableOptions: {pk: 'unused', name: 'unused', url: '/api/station/' + station.settings.macaddress() + '/partial', params: {key: 'settings.room'}}")
             // ko if: more
             dt Stream
             dd
               dl(style="margin-left: 10px;margin-top: 0px;" )
                 dt Host
                 dd(data-bind="with: {host: station.settings.stream.host || '', macaddress: station.settings.macaddress() } ")
-                  span(data-bind="editable: host, editableOptions: {pk: 'unused', name: 'unused', url: '/api/stations/' + macaddress + '/partial', params: {key: 'settings.stream.host'}}")
+                  span(data-bind="editable: host, editableOptions: {pk: 'unused', name: 'unused', url: '/api/station/' + macaddress + '/partial', params: {key: 'settings.stream.host'}}")
                 dt Password
                 dd(data-bind="with: {password: station.settings.stream.password || '', macaddress: station.settings.macaddress() } ")
-                  span(data-bind="editable: password, editableOptions: {pk: 'unused', name: 'unused', url: '/api/stations/' + macaddress + '/partial', params: {key: 'settings.stream.password'}}")
+                  span(data-bind="editable: password, editableOptions: {pk: 'unused', name: 'unused', url: '/api/station/' + macaddress + '/partial', params: {key: 'settings.stream.password'}}")
                 dt Port
                 dd(data-bind="with: {port: station.settings.stream.port || '', macaddress: station.settings.macaddress() } ")
-                  span(data-bind="editable: port, editableOptions: {pk: 'unused', name: 'unused', url: '/api/stations/' + macaddress + '/partial', params: {key: 'settings.stream.port'}}")
+                  span(data-bind="editable: port, editableOptions: {pk: 'unused', name: 'unused', url: '/api/station/' + macaddress + '/partial', params: {key: 'settings.stream.port'}}")
                 dt Stream
                 dd(data-bind="with: {stream: station.settings.stream.stream || '', macaddress: station.settings.macaddress() } ")
-                  span(data-bind="editable: stream, editableOptions: {pk: 'unused', name: 'unused', url: '/api/stations/' + macaddress + '/partial', params: {key: 'settings.stream.stream'}}")
+                  span(data-bind="editable: stream, editableOptions: {pk: 'unused', name: 'unused', url: '/api/station/' + macaddress + '/partial', params: {key: 'settings.stream.stream'}}")
             dt Mixer
             dd
               dl(style="margin-left: 10px;margin-top: 0px;" )
                 dt Host
                 dd(data-bind="with: {host: station.settings.mixer.host || '', macaddress: station.settings.macaddress() } ")
-                  span(data-bind="editable: host, editableOptions: {pk: 'unused', name: 'unused', url: '/api/stations/' + macaddress + '/partial', params: {key: 'settings.mixer.host'}}")
+                  span(data-bind="editable: host, editableOptions: {pk: 'unused', name: 'unused', url: '/api/station/' + macaddress + '/partial', params: {key: 'settings.mixer.host'}}")
                 dt Port
                 dd(data-bind="with: {port: station.settings.mixer.port || '', macaddress: station.settings.macaddress() } ")
-                  span(data-bind="editable: port, editableOptions: {pk: 'unused', name: 'unused', url: '/api/stations/' + macaddress + '/partial', params: {key: 'settings.mixer.port'}}")
+                  span(data-bind="editable: port, editableOptions: {pk: 'unused', name: 'unused', url: '/api/station/' + macaddress + '/partial', params: {key: 'settings.mixer.port'}}")
                 dt Standy Loop 
                 dd(data-bind="with: {loop: station.settings.mixer.loop || '', macaddress: station.settings.macaddress() } ")
-                  span(data-bind="editable: loop, editableOptions: {pk: 'unused', name: 'unused', url: '/api/stations/' + macaddress + '/partial', params: {key: 'settings.mixer.loop'}}")
+                  span(data-bind="editable: loop, editableOptions: {pk: 'unused', name: 'unused', url: '/api/station/' + macaddress + '/partial', params: {key: 'settings.mixer.loop'}}")
             dt Record 
             dd
               dl(style="margin-left: 10px;margin-top: 0px;" )
                 dt Path 
                 dd(data-bind="with: {record_path: station.settings.record_path || '', macaddress: station.settings.macaddress() } ")
-                  span(data-bind="editable: record_path, editableOptions: {pk: 'unused', name: 'unused', url: '/api/stations/' + macaddress + '/partial', params: {key: 'settings.record_path'}}")
+                  span(data-bind="editable: record_path, editableOptions: {pk: 'unused', name: 'unused', url: '/api/station/' + macaddress + '/partial', params: {key: 'settings.record_path'}}")
                 dt Sync Remote Host 
                 dd(data-bind="with: {sync_host: station.settings.sync.host || '', macaddress: station.settings.macaddress() } ")
-                  span(data-bind="editable: sync_host, editableOptions: {pk: 'unused', name: 'unused', url: '/api/stations/' + macaddress + '/partial', params: {key: 'settings.sync.host'}}")
+                  span(data-bind="editable: sync_host, editableOptions: {pk: 'unused', name: 'unused', url: '/api/station/' + macaddress + '/partial', params: {key: 'settings.sync.host'}}")
                 dt Sync Remote Path 
                 dd(data-bind="with: {remote_path: station.settings.sync.path || '', macaddress: station.settings.macaddress() } ")
-                  span(data-bind="editable: remote_path, editableOptions: {pk: 'unused', name: 'unused', url: '/api/stations/' + macaddress + '/partial', params: {key: 'settings.sync.path'}}")
+                  span(data-bind="editable: remote_path, editableOptions: {pk: 'unused', name: 'unused', url: '/api/station/' + macaddress + '/partial', params: {key: 'settings.sync.path'}}")
             // /ko
             dl(data-bind="with: {available: ko.observable(false)}")
               dt
@@ -165,7 +165,7 @@ block content
               // /ko
               dt Roles
               dd(data-bind="with: {roles: station.settings.roles || [], macaddress: station.settings.macaddress()}")
-                span(data-bind="editable: roles, editableOptions: {display: roleDisplay, type: 'checklist', source: availableRoles, pk: 'unused', name: 'unused', url: '/api/stations/' + macaddress + '/partial', params: {key: 'settings.roles'}}")
+                span(data-bind="editable: roles, editableOptions: {display: roleDisplay, type: 'checklist', source: availableRoles, pk: 'unused', name: 'unused', url: '/api/station/' + macaddress + '/partial', params: {key: 'settings.roles'}}")
               dt Status 
               dd
                 ul.list-unstyled
