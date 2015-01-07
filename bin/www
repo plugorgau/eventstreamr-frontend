@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-var debug = require('debug')('aquarium');
+var debug = require('debug')('av-conductor');
 var app = require('../app');
 var io = require('../io');
 
