@@ -160,7 +160,7 @@ router.post("/:macaddress/action", function(req, res) {
   });
 });
 
-router.delete('/:macaddress', function(){
+router.delete('/:macaddress', function(req, res){
   db.remove('stations', {'settings.macaddress': req.params.macaddress}, function(error, removed) {
     if (removed) {
       res.status(204).send(true);

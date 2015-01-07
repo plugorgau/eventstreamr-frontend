@@ -45,13 +45,13 @@ block content
   script#room-template(type="text/html")
     .panel.panel-primary
       .panel-heading
-        .pull-right.room-actions
+        .pull-right.room-actions(data-bind="if: roomId")
           a.btn.btn-success(data-bind="click: actionStations.bind($data, roomId, 'start')") start
           a.btn.btn-warning(data-bind="click: actionStations.bind($data, roomId, 'restart')") restart
           a.btn.btn-info(data-bind="click: actionStations.bind($data, roomId, 'update')") update
           a.btn.btn-danger(data-bind="click: actionStations.bind($data, roomId, 'stop')") stop
           a.btn.btn-default(data-bind="click: actionStations.bind($data, roomId, 'reboot')") reboot
-        h3.panel-title {{roomId}}
+        h3.panel-title {{roomId || "No Room"}}
           
         
       .panel-body
@@ -62,7 +62,15 @@ block content
     .col-md-4.col-sm-6
       .panel.panel-default
         .panel-heading
-          .pull-right.room-actions
+          div(data-bind="if: roomId")
+            button.btn.btn-default.btn-xs.room-remove(data-bind="click: removeStationRoom", title="Forget Room")
+              small
+               i.glyphicon.glyphicon-remove
+          div(data-bind="ifnot: roomId")
+            button.btn.btn-default.btn-xs.pull-right(data-bind="click: removeStation", title="Forget Station")
+              small
+               i.glyphicon.glyphicon-remove
+          .pull-right.room-actions(data-bind="if: roomId")
             a.btn.btn-success(data-bind="click: actionDevice.bind($data, $data.settings.macaddress(), 'all', 'start')") Start 
             a.btn.btn-warning(data-bind="click: actionDevice.bind($data, $data.settings.macaddress(), 'all', 'restart')") Restart
             a.btn.btn-primary(data-bind="click: actionStationManager.bind($data, $data.settings.macaddress(), 'update')") Update
