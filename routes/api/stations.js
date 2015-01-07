@@ -4,6 +4,35 @@ var station = require('../../lib/station');
 var express = require('express');
 var router = express.Router();
 
+router.get('/', function(req, res) {
+  db.list('stations', {}, function (error, docs) {
+    if (error) {
+      res.status(500).send(err);
+    }
+    if (docs) {
+      res.send(docs);
+    }
+  });
+});
+
+router.get('/station/:id', function(req, res, next) {
+  var query = {};
+  var tableInfo = tablesDocLookups.station;
+  query[tableInfo.key] = req.params.id;
+  db.get(req.params.db, query, function (error, doc) {
+    if (error) {
+      res.status(500).send(error);
+    }
+    if (doc === null) {
+      res.status(404).send(tableInfo);
+    }
+    if (doc) {
+      res.status(200).send(doc);
+    }
+  });
+});
+
+
 var tablesDocLookups = {
   stations: {
     valueKey: 'macaddress',

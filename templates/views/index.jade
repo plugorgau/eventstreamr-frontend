@@ -143,13 +143,13 @@ block content
                   div.col-sm-6
                     div.panel.panel-default
                       div.panel-heading
-                        button.btn.btn-default.btn-xs.room-remove(data-bind="click: removeDevice.bind($data, $parents[1].settings.devices(), $parents[1].settings.macaddress(), id())", title="Remove Device", type="button")
+                        button.btn.btn-default.btn-xs.room-remove(data-bind="click: removeDevice.bind($data, station.settings.devices(), station.settings.macaddress(), id())", title="Remove Device", type="button")
                           small
                             i.glyphicon.glyphicon-remove
                         div.control-actions.btn-group
-                          a.btn.btn-success.btn-xs(data-bind="click: actionDevice.bind($data, $parents[1].settings.macaddress(), id, 'start')") Start
-                          a.btn.btn-warning.btn-xs(data-bind="click: actionDevice.bind($data, $parents[1].settings.macaddress(), id, 'restart')") Restart
-                          a.btn.btn-danger.btn-xs(data-bind="click: actionDevice.bind($data, $parents[1].settings.macaddress(), id, 'stop')") Stop
+                          a.btn.btn-success.btn-xs(data-bind="click: actionDevice.bind($data, station.settings.macaddress(), id, 'start')") Start
+                          a.btn.btn-warning.btn-xs(data-bind="click: actionDevice.bind($data, station.settings.macaddress(), id, 'restart')") Restart
+                          a.btn.btn-danger.btn-xs(data-bind="click: actionDevice.bind($data, station.settings.macaddress(), id, 'stop')") Stop
                       div.panel-body 
                         small {{name}}
                 // /ko

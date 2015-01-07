@@ -140,7 +140,7 @@ ko.applyBindings(vm);
 var socket = io.connect('//');
 
 
-$.get( "/api/stations", function( data ) {
+$.get( "/api/station", function( data ) {
 })
   .done(function(data) {
     ko.mapping.fromJS(data, mapping, vm.stations);
