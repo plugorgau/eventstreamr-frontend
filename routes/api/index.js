@@ -19,7 +19,7 @@ router.get('/:db', function(req, res) {
   if (tableNames.indexOf(req.params.db) !== -1) {
     db.list(req.params.db, {}, function (error, docs) {
       if (error) {
-        res.send(500, err);
+        res.status(500).send(err);
       }
       if (docs) {
         res.send(docs);
@@ -27,7 +27,7 @@ router.get('/:db', function(req, res) {
     });
   }
   else {
-    res.send(404);
+    res.status(404).send();
   }
 });
 
@@ -38,18 +38,18 @@ router.get('/:db/:id', function(req, res, next) {
     query[tableInfo.key] = req.params.id;
     db.get(req.params.db, query, function (error, doc) {
       if (error) {
-        res.send(500, error);
+        res.status(500).send(error);
       }
       if (doc === null) {
-        res.send(404, tableInfo);
+        res.status(404).send(tableInfo);
       }
       if (doc) {
-        res.send(200, doc);
+        res.status(200).send(doc);
       }
     });
   }
   else {
-    res.send(404);
+    res.status(404).send();
   }
 });
 
@@ -71,21 +71,21 @@ router.post('/:db/:id/partial', function(req, res, next) {
     
     db.update(req.params.db, query, partial, function (error, doc) {
       if (error) {
-        res.send(500);
+        res.status(500).send();
       }
       if (doc) {
         if (!req.headers['station-mgr']){
           station.update(doc);
         }
-        res.send(200, partial);
+        res.status(200).send(partial);
       }
       if (!error && !doc) {
-        res.send(404);
+        res.status(404).send();
       }
     });
   }  
   else {
-    res.send(404);
+    res.status(404).send();
   }
 });
 

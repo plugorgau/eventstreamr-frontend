@@ -43,7 +43,7 @@ var StationSettings = function(request) {
 router.post('/', function(req, res) {
   if (!req.body.macaddress) {
     var error = new Error('Mac Address required');
-    return res.send(400, error);
+    return res.status(400).send(error);
   }
   db.get('stations', { 'settings.macaddress': req.body.macaddress }, function (error, doc) {
     
@@ -55,20 +55,20 @@ router.post('/', function(req, res) {
     if (!error && doc === null) {
       insertStation(settings, req.body.ip, function(error, success) {
         if (error) {
-          res.send(500, error);
+          res.status(500).send(error);
         }
         if (success) {
-          res.send(200, true);
+          res.status(200).send(true);
         }
       });
     }
     if (doc) {
       db.updateRaw('stations', { "settings.macaddress": req.body.macaddress }, { $set: { "settings": settings } }, function(error, success) {
         if (error) {
-          res.send(500, error);
+          res.status(500).send(error);
         }
         if (success) {
-          res.send(200, true);
+          res.status(200).send(true);
         }
       });
     }
@@ -85,7 +85,7 @@ router.post("/:macaddress", function(req, res) {
       var station = new StationSettings({macaddress: req.params.macaddress});
       insertStation(station, req.ip, function(error, success) {
         if (success) {
-          res.send(201);
+          res.status(201).send();
         }
       });
     }
@@ -94,7 +94,7 @@ router.post("/:macaddress", function(req, res) {
         db.updateRaw('stations', { ip: req.ip }, { $unset: { ip: true } }, function () {});
         db.updateRaw('stations', { "settings.macaddress": macaddress }, { $set: { ip: req.ip } }, function () {});
       }
-      res.send(200, doc);
+      res.status(200).send(doc);
     }
   });
 });
@@ -134,7 +134,7 @@ router.post("/:macaddress/action", function(req, res) {
     partial[req.body.key] = req.body.value;
     
     if (doc === null) {
-      res.send(204);
+      res.status(204).send();
     }
     if (doc) {
       station.action(req.body, doc);
@@ -143,14 +143,14 @@ router.post("/:macaddress/action", function(req, res) {
         console.log("Writing our state to the db");
         db.update('stations', query, partial, function (error, doc) {
           if (error) {
-            res.send(500);
+            res.status(500).send();
           }
           if (doc) {
             console.log("Written");
-            res.send(200, doc);
+            res.status(200).send(doc);
           }
           if (!error && !doc) {
-            res.send(404);
+            res.status(404).send();
           }
         });
       } else {
@@ -163,7 +163,7 @@ router.post("/:macaddress/action", function(req, res) {
 router.delete('/:macaddress', function(){
   db.remove('stations', {'settings.macaddress': req.params.macaddress}, function(error, removed) {
     if (removed) {
-      res.send(204, true);
+      res.status(204).send(true);
     }
   });
 });
