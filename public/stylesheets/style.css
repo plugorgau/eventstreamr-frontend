@@ -1,0 +1,13 @@
+body {
+  padding: 50px;
+}
+
+.room-actions {
+  margin-right: -14px;
+}
+
+.room-actions .btn {
+  margin: -17px 0 1px;
+  padding: 5px 4px;
+  font-size:10px;
+}

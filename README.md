@@ -1,6 +1,11 @@
 eventstreamr-frontend
 =====================
 
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/plugorgau/eventstreamr-frontend?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+AV Conductor is a frontend for the AV Orchestraion project.
 
-Frontend for eventstreamr
+https://github.com/plugorgau/eventstreamr
+
+Features
+--------
+
+Provides a ui for the stations apis that allow you to manage rooms, stations and streams.

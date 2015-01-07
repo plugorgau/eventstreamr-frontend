@@ -1,0 +1,162 @@
+var db = require('../../lib/db');
+var station = require('../../lib/station');
+
+var express = require('express');
+var router = express.Router();
+
+var insertStation = function(settings, ip, callback) {
+  var document = {
+    ip: ip || null,
+    settings: settings
+  };
+  db.insert('stations', document, callback);
+};
+
+var StationSettings = function(request) {
+  if (request.roles && typeof request.roles == 'string') {
+    request.roles = [request.roles];
+  }
+  return {
+    macaddress: request.macaddress,
+    roles: request.roles || [],
+    room: request.room || '',
+    devices: request.devices || [],
+    nickname: request.nickname,
+    record_path: request.record_path || null,
+    mixer: request.mixer || null,
+    stream: request.stream || null,
+    sync: request.sync || null,
+    run: request.run || 0,
+    device_control: request.device_control || null
+  };
+};
+
+router.post('/', function(req, res) {
+  if (!req.body.macaddress) {
+    var error = new Error('Mac Address required');
+    return res.send(400, error);
+  }
+  db.get('stations', { 'settings.macaddress': req.body.macaddress }, function (error, doc) {
+    
+    if (req.headers['station-mgr']) {
+      req.body.ip = req.ip;
+    }
+    
+    var settings = new StationSettings(req.body);
+    if (!error && doc === null) {
+      insertStation(settings, req.body.ip, function(error, success) {
+        if (error) {
+          res.send(500, error);
+        }
+        if (success) {
+          res.send(200, true);
+        }
+      });
+    }
+    if (doc) {
+      db.updateRaw('stations', { "settings.macaddress": req.body.macaddress }, { $set: { "settings": settings } }, function(error, success) {
+        if (error) {
+          res.send(500, error);
+        }
+        if (success) {
+          res.send(200, true);
+        }
+      });
+    }
+    if (error) {
+      console.log(error);
+      res.send(500, error);
+    }
+  });
+});
+
+router.post("/:macaddress", function(req, res) {
+  db.get('stations', { 'settings.macaddress': req.params.macaddress }, function (error, doc) {
+    if (doc === null) {
+      var station = new StationSettings({macaddress: req.params.macaddress});
+      insertStation(station, req.ip, function(error, success) {
+        if (success) {
+          res.send(201);
+        }
+      });
+    }
+    if (doc) {
+      if (doc.ip !== req.ip) {
+        db.updateRaw('stations', { ip: req.ip }, { $unset: { ip: true } }, function () {});
+        db.updateRaw('stations', { "settings.macaddress": macaddress }, { $set: { ip: req.ip } }, function () {});
+      }
+      res.send(200, doc);
+    }
+  });
+});
+
+router.post("/:macaddress/action", function(req, res) {
+  db.get('stations', { 'settings.macaddress': req.params.macaddress }, function (error, doc) {
+    var partial = {};
+    var query = {};
+    var dbwrite = '';
+    var tableInfo = tablesDocLookups.stations;
+    query[tableInfo.key] = req.params.macaddress;
+    if (req.body.id == 'all' && req.body.command_url == 'command') {
+      req.body.key = 'settings.run';
+      dbwrite = '1';
+    } else if (req.body.command_url == 'command') {
+      req.body.key = 'settings.device_control.' + req.body.id  + '.run';
+      dbwrite = '1';
+    }
+    
+    if(dbwrite) {
+      switch(req.body.action) {
+        case 'start':
+          req.body.value = '1';
+          break;
+        case 'stop':
+          req.body.value = '0';
+          break;
+        case 'restart':
+          req.body.value = '2';
+          break;
+        default:
+          // if all else fails the room/device must run
+          req.body.value = '1';
+      }
+    }
+    
+    partial[req.body.key] = req.body.value;
+    
+    if (doc === null) {
+      res.send(204);
+    }
+    if (doc) {
+      station.action(req.body, doc);
+      if (dbwrite) {
+        console.log(partial);
+        console.log("Writing our state to the db");
+        db.update('stations', query, partial, function (error, doc) {
+          if (error) {
+            res.send(500);
+          }
+          if (doc) {
+            console.log("Written");
+            res.send(200, doc);
+          }
+          if (!error && !doc) {
+            res.send(404);
+          }
+        });
+      } else {
+        res.send(200,true);
+      }
+    }
+  });
+});
+
+router.delete('/:macaddress', function(){
+  db.remove('stations', {'settings.macaddress': req.params.macaddress}, function(error, removed) {
+    if (removed) {
+      res.send(204, true);
+    }
+  });
+});
+
+module.exports = router;

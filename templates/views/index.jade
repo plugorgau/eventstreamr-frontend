@@ -1,0 +1,192 @@
+mixin form-group-standard(label, name, type, placeholder)
+  .form-group
+    label.col-lg-2.col-md-3.col-sm-4.control-label= label
+    .col-lg-10.col-md-9.col-sm-8
+      input.form-control(type=type, name=name, placeholder=placeholder, data-bind="value: $data.#{name}")
+
+mixin form-group-checkbox(label, name, options)
+  .form-group
+    span.col-lg-2.col-md-3.col-sm-4.control-label= label
+    .col-lg-10.col-md-9.col-sm-8
+      each option in options
+        label
+          input(type="checkbox", name=name, value=option, data-bind="checkedValue: '#{option}', checked: $data['#{name}']")
+          |  #{option}
+
+extends ../layouts/base
+
+block content
+  .panel.panel-default
+    .panel-body
+      h1= common.title
+      p Welcome to #{common.title}, a system used for audio visual orchestration at open source events.
+
+  .container
+    button.btn.btn-default.btn-sm.pull-right(data-toggle="collapse", data-target="#add-station", type="button", form-toggle) Add Station
+    h3 Rooms
+    .collapse#add-station
+      .panel.panel-default
+        .panel-heading
+          h3.panel-title New Station
+        .panel-body
+          form.form-horizontal.data-async(role="form", data-bind="with: {roles: [], room: null, nickname: null, record_path: null}")
+            legend.test-data Station Details
+            mixin form-group-standard("Mac Address", "macaddress", "text", "##:##:##:##:##:##")
+            mixin form-group-checkbox("Roles", "roles", ["mixer","ingest","record","stream"])
+            mixin form-group-standard("Nickname", "nickname", "text", "podium camera")
+            mixin form-group-standard("Room", "room", "text", "")
+            mixin form-group-standard("Record Path", "record_path", "text", "")
+            .form-group
+              .col-lg-offset-2.col-lg-10.col-md-offset-3.col-md-9.col-sm-offset-4.col-sm-8
+                button.btn.btn-default(type="submit", data-bind="click: submitStation") Submit
+  br
+  .container-fluid(data-bind="template: {name: 'room-template', foreach: vm.rooms(), as: 'roomId'}")
+    
+  script#room-template(type="text/html")
+    .panel.panel-primary
+      .panel-heading
+        .pull-right.room-actions
+          a.btn.btn-success(data-bind="click: actionStations.bind($data, roomId, 'start')") start
+          a.btn.btn-warning(data-bind="click: actionStations.bind($data, roomId, 'restart')") restart
+          a.btn.btn-info(data-bind="click: actionStations.bind($data, roomId, 'update')") update
+          a.btn.btn-danger(data-bind="click: actionStations.bind($data, roomId, 'stop')") stop
+          a.btn.btn-default(data-bind="click: actionStations.bind($data, roomId, 'reboot')") reboot
+        h3.panel-title {{roomId}}
+          
+        
+      .panel-body
+        .row(data-bind="template: {name: 'station-template', foreach: vm.stations(), as: 'station'}")
+  
+  script#station-template(type="text/html")
+    // ko if: roomId == station.settings.room()
+    .col-md-4.col-sm-6
+      .panel.panel-default
+        .panel-heading
+          .pull-right.room-actions
+            a.btn.btn-success(data-bind="click: actionDevice.bind($data, $data.settings.macaddress(), 'all', 'start')") Start 
+            a.btn.btn-warning(data-bind="click: actionDevice.bind($data, $data.settings.macaddress(), 'all', 'restart')") Restart
+            a.btn.btn-primary(data-bind="click: actionStationManager.bind($data, $data.settings.macaddress(), 'update')") Update
+            a.btn.btn-danger(data-bind="click: actionDevice.bind($data, $data.settings.macaddress(), 'all', 'stop')") Stop
+            a.btn.btn-default(data-bind="click: actionStationManager.bind($data, $data.settings.macaddress(), 'reboot')") Reboot
+          div(data-bind="with: {nickname: $data.settings.nickname || '', macaddress: $data.settings.macaddress() } ")
+            h3.panel-title
+              span(data-bind="editable: nickname, editableOptions: {pk: 'unused', name: 'unused', url: '/api/stations/' + macaddress + '/partial', params: {key: 'settings.nickname'}}")
+        .panel-body
+
+          dl(data-bind="with: {more: ko.observable(false)}")
+            dt
+              button.btn.btn-xs.btn-default.pull-right(data-bind="click: function(data) {data.more(!data.more());}") 
+                span(data-bind="text: (more() ? 'Show less' : 'Show more')")
+              | Room
+            dd
+              div(data-bind="editable: station.settings.room, editableOptions: {pk: 'unused', name: 'unused', url: '/api/stations/' + station.settings.macaddress() + '/partial', params: {key: 'settings.room'}}")
+            // ko if: more
+            dt Stream
+            dd
+              dl(style="margin-left: 10px;margin-top: 0px;" )
+                dt Host
+                dd(data-bind="with: {host: station.settings.stream.host || '', macaddress: station.settings.macaddress() } ")
+                  span(data-bind="editable: host, editableOptions: {pk: 'unused', name: 'unused', url: '/api/stations/' + macaddress + '/partial', params: {key: 'settings.stream.host'}}")
+                dt Password
+                dd(data-bind="with: {password: station.settings.stream.password || '', macaddress: station.settings.macaddress() } ")
+                  span(data-bind="editable: password, editableOptions: {pk: 'unused', name: 'unused', url: '/api/stations/' + macaddress + '/partial', params: {key: 'settings.stream.password'}}")
+                dt Port
+                dd(data-bind="with: {port: station.settings.stream.port || '', macaddress: station.settings.macaddress() } ")
+                  span(data-bind="editable: port, editableOptions: {pk: 'unused', name: 'unused', url: '/api/stations/' + macaddress + '/partial', params: {key: 'settings.stream.port'}}")
+                dt Stream
+                dd(data-bind="with: {stream: station.settings.stream.stream || '', macaddress: station.settings.macaddress() } ")
+                  span(data-bind="editable: stream, editableOptions: {pk: 'unused', name: 'unused', url: '/api/stations/' + macaddress + '/partial', params: {key: 'settings.stream.stream'}}")
+            dt Mixer
+            dd
+              dl(style="margin-left: 10px;margin-top: 0px;" )
+                dt Host
+                dd(data-bind="with: {host: station.settings.mixer.host || '', macaddress: station.settings.macaddress() } ")
+                  span(data-bind="editable: host, editableOptions: {pk: 'unused', name: 'unused', url: '/api/stations/' + macaddress + '/partial', params: {key: 'settings.mixer.host'}}")
+                dt Port
+                dd(data-bind="with: {port: station.settings.mixer.port || '', macaddress: station.settings.macaddress() } ")
+                  span(data-bind="editable: port, editableOptions: {pk: 'unused', name: 'unused', url: '/api/stations/' + macaddress + '/partial', params: {key: 'settings.mixer.port'}}")
+                dt Standy Loop 
+                dd(data-bind="with: {loop: station.settings.mixer.loop || '', macaddress: station.settings.macaddress() } ")
+                  span(data-bind="editable: loop, editableOptions: {pk: 'unused', name: 'unused', url: '/api/stations/' + macaddress + '/partial', params: {key: 'settings.mixer.loop'}}")
+            dt Record 
+            dd
+              dl(style="margin-left: 10px;margin-top: 0px;" )
+                dt Path 
+                dd(data-bind="with: {record_path: station.settings.record_path || '', macaddress: station.settings.macaddress() } ")
+                  span(data-bind="editable: record_path, editableOptions: {pk: 'unused', name: 'unused', url: '/api/stations/' + macaddress + '/partial', params: {key: 'settings.record_path'}}")
+                dt Sync Remote Host 
+                dd(data-bind="with: {sync_host: station.settings.sync.host || '', macaddress: station.settings.macaddress() } ")
+                  span(data-bind="editable: sync_host, editableOptions: {pk: 'unused', name: 'unused', url: '/api/stations/' + macaddress + '/partial', params: {key: 'settings.sync.host'}}")
+                dt Sync Remote Path 
+                dd(data-bind="with: {remote_path: station.settings.sync.path || '', macaddress: station.settings.macaddress() } ")
+                  span(data-bind="editable: remote_path, editableOptions: {pk: 'unused', name: 'unused', url: '/api/stations/' + macaddress + '/partial', params: {key: 'settings.sync.path'}}")
+            // /ko
+            dl(data-bind="with: {available: ko.observable(false)}")
+              dt
+                // ko if: station.availableDevices && station.availableDevices[0]
+                button.btn.btn-xs.btn-default.pull-right(data-bind="click: function(data) {data.available(!data.available());}") 
+                  span(data-bind="text: (available() ? 'Close' : 'Available')")
+                // /ko
+                | Devices
+              dd
+                // ko if: station.settings.devices
+                // ko if: station.settings.devices() !== 'all'
+                div.row(data-bind="foreach: {data: station.settings.devices, as: 'device'}")
+                  div.col-sm-6
+                    div.panel.panel-default
+                      div.panel-heading
+                        button.btn.btn-default.btn-xs.room-remove(data-bind="click: removeDevice.bind($data, $parents[1].settings.devices(), $parents[1].settings.macaddress(), id())", title="Remove Device", type="button")
+                          small
+                            i.glyphicon.glyphicon-remove
+                        div.control-actions.btn-group
+                          a.btn.btn-success.btn-xs(data-bind="click: actionDevice.bind($data, $parents[1].settings.macaddress(), id, 'start')") Start
+                          a.btn.btn-warning.btn-xs(data-bind="click: actionDevice.bind($data, $parents[1].settings.macaddress(), id, 'restart')") Restart
+                          a.btn.btn-danger.btn-xs(data-bind="click: actionDevice.bind($data, $parents[1].settings.macaddress(), id, 'stop')") Stop
+                      div.panel-body 
+                        small {{name}}
+                // /ko
+                // /ko
+              // ko if: available
+              dt Available Devices
+              dd
+                ul.list-unstyled
+                  div(data-bind="foreach: {data: station.availableDevices, as: 'availableDevice'}")
+                    li
+                      small
+                        span(data-bind="click: availableDeviceClick.bind($data, availableDevice, $parents[1].settings.devices || [], $parents[1].settings.macaddress)") {{availableDevice.name}}
+              // /ko
+              dt Roles
+              dd(data-bind="with: {roles: station.settings.roles || [], macaddress: station.settings.macaddress()}")
+                span(data-bind="editable: roles, editableOptions: {display: roleDisplay, type: 'checklist', source: availableRoles, pk: 'unused', name: 'unused', url: '/api/stations/' + macaddress + '/partial', params: {key: 'settings.roles'}}")
+              dt Status 
+              dd
+                ul.list-unstyled
+                  div(data-bind="foreach: {data: station.statusArray || [], as:status}")
+                    li
+                      // ko if: running
+                      span.glyphicon.glyphicon-thumbs-up
+                      | 
+                      // /ko
+                      // ko if: !running
+                      span.glyphicon.glyphicon-thumbs-down
+                      | 
+                      // /ko
+                      // ko if: type == 'internal'
+                      Strong {{name}}
+                      | 
+                      // /ko
+                      // ko if: type !== 'internal'
+                      Strong {{type}} 
+                      | 
+                      // /ko
+                      // ko if: !running
+                      | - 
+                      small {{status}}
+                      | 
+                      // /ko
+                      // ko if: status == 'starting'
+                      span.fa.fa-spinner.fa-spin
+                      | 
+                      // /ko
+
+    // /ko
