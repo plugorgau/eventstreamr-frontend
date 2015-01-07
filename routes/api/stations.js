@@ -4,6 +4,15 @@ var station = require('../../lib/station');
 var express = require('express');
 var router = express.Router();
 
+var tablesDocLookups = {
+  stations: {
+    valueKey: 'macaddress',
+    key: 'settings.macaddress'
+  }
+};
+
+var tableNames = Object.keys(tablesDocLookups);
+
 var insertStation = function(settings, ip, callback) {
   var document = {
     ip: ip || null,
