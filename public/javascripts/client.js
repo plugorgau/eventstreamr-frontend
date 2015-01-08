@@ -42,16 +42,13 @@ var availableDevices = function(station) {
       });
       
       var availableDevices = allDevices.filter(function(item) {
-        var deviceId = Object.keys(item)[0];
-        if (configuredDevices.indexOf(deviceId) == -1) {
-          return item[deviceId];
+        if (configuredDevices.indexOf(Object.keys(item)[0]) == -1) {
+          return item;
         }
       });
       return availableDevices;
     }
-    return allDevices.map(function(item) {
-      return item[Object.keys(item)[0]];
-    });
+    return allDevices;
   }
   return [];
 };
