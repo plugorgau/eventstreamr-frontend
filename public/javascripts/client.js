@@ -30,33 +30,6 @@ var vm = {
   stations: ko.mapping.fromJS([]),
 };
 
-var statusArray = function(options) {
-  // makes interface easier to write if status is an array of objects, 
-  // but easier for the manager to keep it internally as an object of objects
-  // can later make this observable to prevent updating the full interface (push, match station, update just status)
-
-  var statusArray = [];
-  for( var i in options.data.status ) {
-    if (options.data.status.hasOwnProperty(i)){
-      options.data.status[i].name = i;
-
-        // this is a hack, fix the manager so that running is populated properly
-        // done enough yak shaving for one conference...
-        if (typeof options.data.status[i].running == 'undefined') {
-          options.data.status[i].running = '0';
-        }
-        if (typeof options.data.status[i].type == 'undefined') {
-          options.data.status[i].type = 'internal';
-        }
-        // end nasty hack
-
-      statusArray.push(options.data.status[i]);
-    }
-  }
-
-  return statusArray;
-};
-
 var availableDevices = function(station) {
   if (station.devices) {
   
@@ -78,21 +51,30 @@ var availableDevices = function(station) {
   return [];
 };
 
-var mapping = {
-  create: function(options) {
-    var innerModel = ko.mapping.fromJS(options.data);
-    
-    // statusArray
-    if (options.data.status) {
-      innerModel.statusArray = statusArray(options);
-      console.log(options.data.status);
-    } else {
-      innerModel.statusArray = [];
-    }
-    return innerModel;
-  }
-};
+var activeStatus = function(station) {
 
+  var statusArray = [];
+  if (station.status) {
+    for( var i in options.data.status ) {
+      if (options.data.status.hasOwnProperty(i)){
+        options.data.status[i].name = i;
+
+          // this is a hack, fix the manager so that running is populated properly
+          // done enough yak shaving for one conference...
+          if (typeof options.data.status[i].running == 'undefined') {
+            options.data.status[i].running = '0';
+          }
+          if (typeof options.data.status[i].type == 'undefined') {
+            options.data.status[i].type = 'internal';
+          }
+          // end nasty hack
+
+        statusArray.push(options.data.status[i]);
+      }
+    }
+  }
+  return statusArray;
+};
 
 vm.roomDuplicates = ko.computed(function() {
   return vm.stations().map(function(item) {
@@ -110,7 +92,7 @@ vm.rooms = ko.computed(function() {
 ko.applyBindings(vm);
 
 var socket = io.connect('//');
-
+var mapping = {};
 
 $.get( "/api/station", function( data ) {
 })
@@ -134,6 +116,9 @@ $.get( "/api/station", function( data ) {
           ko.mapping.fromJS(data.content, mapping)
         );*/
         ko.mapping.fromJS(data.content, mapping, match);
+        if (!data.content.settings.devices) {
+          match.settings.devices([]);
+        }
 
       }
       if (data.type == 'notify') {

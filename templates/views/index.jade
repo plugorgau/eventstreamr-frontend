@@ -170,7 +170,7 @@ block content
               dt Status 
               dd
                 ul.list-unstyled
-                  div(data-bind="foreach: {data: station.statusArray || [], as:status}")
+                  div(data-bind="foreach: {data: activeStatus(station) || [], as:status}")
                     li
                       // ko if: running
                       span.glyphicon.glyphicon-thumbs-up
