@@ -55,21 +55,21 @@ var activeStatus = function(station) {
 
   var statusArray = [];
   if (station.status) {
-    for( var i in options.data.status ) {
-      if (options.data.status.hasOwnProperty(i)){
-        options.data.status[i].name = i;
+    for( var i in station.status ) {
+      if (station.status.hasOwnProperty(i)){
+        station.status[i].name = i;
 
           // this is a hack, fix the manager so that running is populated properly
           // done enough yak shaving for one conference...
-          if (typeof options.data.status[i].running == 'undefined') {
-            options.data.status[i].running = '0';
+          if (typeof station.status[i].running == 'undefined') {
+            station.status[i].running = '0';
           }
-          if (typeof options.data.status[i].type == 'undefined') {
-            options.data.status[i].type = 'internal';
+          if (typeof station.status[i].type == 'undefined') {
+            station.status[i].type = 'internal';
           }
           // end nasty hack
 
-        statusArray.push(options.data.status[i]);
+        statusArray.push(station.status[i]);
       }
     }
   }
