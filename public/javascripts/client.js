@@ -33,7 +33,7 @@ var vm = {
 var availableDevices = function(station) {
   if (station.devices) {
   
-    var allDevices = station.devices();
+    var allDevices = station.devices;
     
     if (station.settings.devices) {
       var configuredDevices = station.settings.devices() || [];
@@ -53,27 +53,33 @@ var availableDevices = function(station) {
 
 var activeStatus = function(station) {
 
-  var statusArray = [];
+  var list = [];
+  if (station.status) {
+    for (var i in station.status) {
+      list.push(station.status[i]);
+    }
+  }
+  return list;
+  /*
   if (station.status) {
     for( var i in station.status ) {
-      if (station.status.hasOwnProperty(i)){
-        station.status[i].name = i;
+      station.status[i].name = i;
 
-          // this is a hack, fix the manager so that running is populated properly
-          // done enough yak shaving for one conference...
-          if (typeof station.status[i].running == 'undefined') {
-            station.status[i].running = '0';
-          }
-          if (typeof station.status[i].type == 'undefined') {
-            station.status[i].type = 'internal';
-          }
-          // end nasty hack
+        // this is a hack, fix the manager so that running is populated properly
+        // done enough yak shaving for one conference...
+        if (typeof station.status[i].running == 'undefined') {
+          station.status[i].running = '0';
+        }
+        if (typeof station.status[i].type == 'undefined') {
+          station.status[i].type = 'internal';
+        }
+        // end nasty hack
 
-        statusArray.push(station.status[i]);
-      }
+      statusArray.push(station.status[i]);
     }
   }
   return statusArray;
+  */
 };
 
 vm.roomDuplicates = ko.computed(function() {
