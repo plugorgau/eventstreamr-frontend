@@ -129,9 +129,10 @@ block content
                 dd(data-bind="with: {remote_path: station.settings.sync.path || '', macaddress: station.settings.macaddress() } ")
                   span(data-bind="editable: remote_path, editableOptions: {pk: 'unused', name: 'unused', url: '/api/station/' + macaddress + '/partial', params: {key: 'settings.sync.path'}}")
             // /ko
-            dl(data-bind="with: {available: ko.observable(false)}")
+            dl(data-bind="with: {available: ko.observable(false), unconfigured: availableDevices(station)}")
               dt
-                // ko if: station.availableDevices && station.availableDevices[0]
+                span
+                // ko if: unconfigured.length
                 button.btn.btn-xs.btn-default.pull-right(data-bind="click: function(data) {data.available(!data.available());}") 
                   span(data-bind="text: (available() ? 'Close' : 'Available')")
                 // /ko
@@ -157,8 +158,8 @@ block content
               // ko if: available
               dt Available Devices
               dd
-                ul.list-unstyled
-                  div(data-bind="foreach: {data: station.availableDevices, as: 'availableDevice'}")
+                ul.list-unstyled(data-bind="with: {unconfigured: availableDevices(station)}")
+                  div(data-bind="foreach: {data: unconfigured, as: 'availableDevice'}")
                     li
                       small
                         span(data-bind="click: availableDeviceClick.bind($data, availableDevice, station.settings.devices || [], station.settings.macaddress)") {{availableDevice.name}}

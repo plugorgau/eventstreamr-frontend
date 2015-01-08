@@ -9,17 +9,21 @@ var availableRoles = [
 
 //-- yuck
 var roleDisplay = function(value, sourceData) {
-   var selectedRoles = "",
-       checked = $.fn.editableutils.itemsByValue(value, sourceData);
+  var checked = $.fn.editableutils.itemsByValue(value, sourceData);
        
-   if(checked.length) {
-     $.each(checked, function(i, v) { 
-       selectedRoles += "<li><span class='label label-info'>" + $.fn.editableutils.escape(v.text) + "</span></li>";
-     });
-     $(this).html('<ul class="list-inline">' + selectedRoles + '</ul>');
-   } else {
-     $(this).empty(); 
-   }
+  if(checked.length) {
+    var selectedRoles = "";
+    
+    checked.forEach(function(value) { 
+      selectedRoles += 
+        "<li><span class='label label-info'>" +
+          $.fn.editableutils.escape(value.text) + 
+        "</span></li>";
+    });
+    $(this).html('<ul class="list-inline">' + selectedRoles + '</ul>');
+  } else {
+    $(this).empty(); 
+  }
 };
 
 var vm = {
@@ -54,38 +58,29 @@ var statusArray = function(options) {
 };
 
 var availableDevices = function(station) {
+  if (station.devices) {
   
-  var allDevices = station.devices;
-  var configuredDevices = station.settings.devices || [];
-  configuredDevices = configuredDevices.map(function(item) {
-    return item.id;
-  });
-  
-  var availableDevices = allDevices.filter(function(item) {
-      return configuredDevices.indexOf(item.id) == -1;
-  });
-  
-  return availableDevices;
+    var allDevices = station.devices();
+    
+    if (station.settings.devices) {
+      var configuredDevices = station.settings.devices() || [];
+      configuredDevices = configuredDevices.map(function(item) {
+        return item.id();
+      });
+      
+      var availableDevices = allDevices.filter(function(item) {
+          return configuredDevices.indexOf(item.id()) == -1;
+      });
+      return availableDevices;
+    }
+    return allDevices;
+  }
+  return [];
 };
 
 var mapping = {
-  update: function(options) {
+  create: function(options) {
     var innerModel = ko.mapping.fromJS(options.data);
-    
-    
-    // availableDevices
-    if (options.data.devices) {
-      try {
-        innerModel.availableDevices = availableDevices(options.data);
-      }
-      catch(err) {
-        console.log(err);
-        console.log("station devices broken, update the station!");
-      }
-      finally {
-        console.log("Available devices populated successfully!");
-      }
-    }
     
     // statusArray
     if (options.data.status) {
@@ -133,11 +128,12 @@ $.get( "/api/station", function( data ) {
         var match = ko.utils.arrayFirst(vm.stations(), function (item) {
             return item._id() == data.content._id;
         });
-        vm.stations.splice(
+        /*vm.stations.splice(
           vm.stations.indexOf(match),
           1,
           ko.mapping.fromJS(data.content, mapping)
-        );
+        );*/
+        ko.mapping.fromJS(data.content, mapping, match);
 
       }
       if (data.type == 'notify') {
