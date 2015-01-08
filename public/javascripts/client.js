@@ -35,7 +35,7 @@ var availableDevices = function(station) {
   
     var allDevices = station.devices();
     
-    if (station.settings.devices) {
+    if (station.settings.devices && station.settings.devices().length) {
       var configuredDevices = station.settings.devices() || [];
       configuredDevices = configuredDevices.map(function(item) {
         return item.id();
