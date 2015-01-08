@@ -33,7 +33,7 @@ var vm = {
 var availableDevices = function(station) {
   if (station.devices) {
   
-    var allDevices = station.devices;
+    var allDevices = station.devices();
     
     if (station.settings.devices) {
       var configuredDevices = station.settings.devices() || [];
@@ -42,11 +42,16 @@ var availableDevices = function(station) {
       });
       
       var availableDevices = allDevices.filter(function(item) {
-          return configuredDevices.indexOf(item.id()) == -1;
+        var deviceId = Object.keys(item)[0];
+        if (configuredDevices.indexOf(deviceId) == -1) {
+          return item[deviceId];
+        }
       });
       return availableDevices;
     }
-    return allDevices;
+    return allDevices.map(function(item) {
+      return item[Object.keys(item)[0]];
+    });
   }
   return [];
 };
