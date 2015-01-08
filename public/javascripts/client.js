@@ -116,13 +116,10 @@ $.get( "/api/station", function( data ) {
         var match = ko.utils.arrayFirst(vm.stations(), function (item) {
             return item._id() == data.content._id;
         });
-        /*vm.stations.splice(
-          vm.stations.indexOf(match),
-          1,
-          ko.mapping.fromJS(data.content, mapping)
-        );*/
-        ko.mapping.fromJS(data.content, mapping, match);
-        if (!data.content.settings.devices) {
+        if (match) {
+          ko.mapping.fromJS(data.content, mapping, match);
+        }
+        if (!data.content.settings.devices && match.settings.devices) {
           match.settings.devices([]);
         }
 

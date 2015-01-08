@@ -172,7 +172,8 @@ block content
               ul.list-unstyled
                 div(data-bind="foreach: {data: activeStatus(station) || [], as:'device'}")
                   li
-                    | {{runcount}} 
+                    span.label.label-info {{state}}
+                    |  {{runcount}} 
                     // ko if: running
                     span.glyphicon.glyphicon-thumbs-up
                     // /ko
@@ -183,8 +184,6 @@ block content
                     strong {{id}} 
                     |  
                     small {{type}}
-                    |  
-                    span.label.label-info {{state}}
                     // ko ifnot: running
                     |  
                     small {{status}}
