@@ -30,6 +30,8 @@ var vm = {
   stations: ko.mapping.fromJS([]),
 };
 
+var t;
+
 var availableDevices = function(station) {
   if (station.devices) {
   
@@ -62,26 +64,6 @@ var activeStatus = function(station) {
     }
   }
   return list;
-  /*
-  if (station.status) {
-    for( var i in station.status ) {
-      station.status[i].name = i;
-
-        // this is a hack, fix the manager so that running is populated properly
-        // done enough yak shaving for one conference...
-        if (typeof station.status[i].running == 'undefined') {
-          station.status[i].running = '0';
-        }
-        if (typeof station.status[i].type == 'undefined') {
-          station.status[i].type = 'internal';
-        }
-        // end nasty hack
-
-      statusArray.push(station.status[i]);
-    }
-  }
-  return statusArray;
-  */
 };
 
 vm.roomDuplicates = ko.computed(function() {
@@ -124,6 +106,11 @@ $.get( "/api/station", function( data ) {
         if (!data.content.settings.devices && match.settings.devices) {
           match.settings.devices([]);
         }
+        $('.unclean').map(function(i, el) {
+          var statusVm = ko.contextFor(el);
+          ko.cleanNode(el);
+          ko.applyBindings(statusVm, el);
+        });
 
       }
       if (data.type == 'notify') {

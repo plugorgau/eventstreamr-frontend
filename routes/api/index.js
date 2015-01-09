@@ -4,21 +4,11 @@ var station = require('../../lib/station');
 var express = require('express');
 var router = express.Router();
 
-var tablesDocLookups = {
-  stations: {
-    valueKey: 'macaddress',
-    key: 'settings.macaddress'
-  }
-};
-
-var tableNames = Object.keys(tablesDocLookups);
-
 router.use('/station', require('./stations'));
 
 router.post('/station/:id/partial', function(req, res, next) {
   var query = {};
-  var tableInfo = tablesDocLookups.stations;
-  query[tableInfo.key] = req.params.id;
+  query['settings.macaddress'] = req.params.id;
   
   partial = {};
   if (req.body instanceof Array) { 
@@ -29,7 +19,6 @@ router.post('/station/:id/partial', function(req, res, next) {
   else {
     partial[req.body.key] = req.body.value;
   }
-  console.log(req.body.value, partial, req.body)
   
   db.update('stations', query, partial, function (error, doc) {
     if (error) {

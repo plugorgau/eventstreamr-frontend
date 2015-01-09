@@ -129,46 +129,15 @@ block content
                 dd(data-bind="with: {remote_path: station.settings.sync.path || '', macaddress: station.settings.macaddress() } ")
                   span(data-bind="editable: remote_path, editableOptions: {pk: 'unused', name: 'unused', url: '/api/station/' + macaddress + '/partial', params: {key: 'settings.sync.path'}}")
             // /ko
-            dl(data-bind="with: {available: ko.observable(false), unconfigured: availableDevices(station)}")
-              dt
-                span
-                // ko if: unconfigured.length
-                button.btn.btn-xs.btn-default.pull-right(data-bind="click: function(data) {data.available(!data.available());}") 
-                  span(data-bind="text: (available() ? 'Close' : 'Available')")
-                // /ko
-                | Devices
-              dd
-                // ko if: station.settings.devices
-                // ko if: station.settings.devices() !== 'all'
-                div.row(data-bind="foreach: {data: station.settings.devices, as: 'device'}")
-                  div.col-sm-6
-                    div.panel.panel-default
-                      div.panel-heading
-                        button.btn.btn-default.btn-xs.room-remove(data-bind="click: removeDevice.bind($data, station.settings.devices(), station.settings.macaddress(), id())", title="Remove Device", type="button")
-                          small
-                            i.glyphicon.glyphicon-remove
-                        div.control-actions.btn-group
-                          a.btn.btn-success.btn-xs(data-bind="click: actionDevice.bind($data, station.settings.macaddress(), id, 'start')") Start
-                          a.btn.btn-warning.btn-xs(data-bind="click: actionDevice.bind($data, station.settings.macaddress(), id, 'restart')") Restart
-                          a.btn.btn-danger.btn-xs(data-bind="click: actionDevice.bind($data, station.settings.macaddress(), id, 'stop')") Stop
-                      div.panel-body 
-                        small {{name}}
-                // /ko
-                // /ko
-              // ko if: available
-              dt Available Devices
-              dd
-                ul.list-unstyled(data-bind="with: {unconfigured: availableDevices(station)}")
-                  div(data-bind="foreach: {data: unconfigured, as: 'availableDevice'}")
-                    li
-                      small
-                        span(data-bind="click: availableDeviceClick.bind($data, availableDevice, station.settings.devices || [], station.settings.macaddress)") {{availableDevice.name}}
-              // /ko
-              dt Roles
-              dd(data-bind="with: {roles: station.settings.roles || [], macaddress: station.settings.macaddress()}")
-                span(data-bind="editable: roles, editableOptions: {display: roleDisplay, type: 'checklist', source: availableRoles, pk: 'unused', name: 'unused', url: '/api/station/' + macaddress + '/partial', params: {key: 'settings.roles'}}")
+            
+            .unclean(data-bind="template: {name: 'devices-overview', data: availableDevices(station)}")
+              
+            dt Roles
+            dd(data-bind="with: {roles: station.settings.roles || [], macaddress: station.settings.macaddress()}")
+              span(data-bind="editable: roles, editableOptions: {display: roleDisplay, type: 'checklist', source: availableRoles, pk: 'unused', name: 'unused', url: '/api/station/' + macaddress + '/partial', params: {key: 'settings.roles'}}")
+              
             dt Status 
-            dd
+            dd.unclean
               table.table.table-condensed
                 thead
                   tr
@@ -176,16 +145,53 @@ block content
                     th runcount
                     th service
                     th type
-                tbody(data-bind="foreach: {data: activeStatus(station) || [], as:'device'}")
-                  tr(data-bind="attr: {class: ((device.running && running())  ? 'success' : 'danger')}")
-                    td(data-bind="if: device.state")
-                      | {{state}}
-                    td(data-bind="if: device.runcount")
-                      | {{runcount}}
-                    th(scope="row", data-bind="if: device.state") 
-                      | {{id}}
-                    td(data-bind="if: device.type")
-                      | {{type}}
+                tbody(data-bind="template: {name: 'status-template', foreach: activeStatus(station), as:'device'}")
                     
           
     // /ko
+  script#devices-overview(type="text/html")
+    // ko with: {available: ko.observable(false), unconfigured: $data}
+    dt Devices
+      button.btn.btn-xs.btn-default.pull-right(data-bind="click: function(data) {data.available(!data.available());}, visible: unconfigured.length") 
+        span(data-bind="text: (available() ? 'Close' : 'Available')")
+    dd
+      dl
+        // ko if: station.settings.devices
+        dt Configured Devices
+        dd
+          div.row(data-bind="template: {name: 'configured-devices', foreach: station.settings.devices, as: 'device'}")
+        // /ko
+        // ko if: available
+        dt Available Devices
+        dd
+          ul.list-unstyled(data-bind="with: {unconfigured: availableDevices(station)}")
+            div(data-bind="template: {name: 'unconfigured-devices', foreach: unconfigured, as: 'availableDevice'}")
+        // /ko
+    // /ko
+  script#unconfigured-devices(type="text/html")
+    li
+      small
+        span(data-bind="click: availableDeviceClick.bind($data, availableDevice, station.settings.devices || [], station.settings.macaddress)") {{availableDevice.name}}
+  script#configured-devices(type="text/html")
+    div.col-sm-6
+      div.panel.panel-default
+        div.panel-heading
+          button.btn.btn-default.btn-xs.room-remove(data-bind="click: removeDevice.bind($data, station.settings.devices(), station.settings.macaddress(), id())", title="Remove Device", type="button")
+            small
+              i.glyphicon.glyphicon-remove
+          div.control-actions.btn-group
+            a.btn.btn-success.btn-xs(data-bind="click: actionDevice.bind($data, station.settings.macaddress(), id, 'start')") Start
+            a.btn.btn-warning.btn-xs(data-bind="click: actionDevice.bind($data, station.settings.macaddress(), id, 'restart')") Restart
+            a.btn.btn-danger.btn-xs(data-bind="click: actionDevice.bind($data, station.settings.macaddress(), id, 'stop')") Stop
+        div.panel-body 
+          small {{name}}
+  script#status-template(type="text/html")
+    tr(data-bind="attr: {class: ((device.running && running())  ? 'success' : 'danger')}")
+      td(data-bind="if: device.state")
+        | {{state}}
+      td(data-bind="if: device.runcount")
+        | {{runcount}}
+      th(scope="row", data-bind="if: device.state") 
+        | {{id}}
+      td(data-bind="if: device.type")
+        | {{type}}
