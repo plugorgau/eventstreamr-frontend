@@ -130,7 +130,9 @@ block content
                   span(data-bind="editable: remote_path, editableOptions: {pk: 'unused', name: 'unused', url: '/api/station/' + macaddress + '/partial', params: {key: 'settings.sync.path'}}")
             // /ko
             
+            // ko with: {available: ko.observable(false)}
             .unclean(data-bind="template: {name: 'devices-overview', data: availableDevices(station)}")
+            // /ko
               
             dt Roles
             dd(data-bind="with: {roles: station.settings.roles || [], macaddress: station.settings.macaddress()}")
@@ -150,7 +152,7 @@ block content
           
     // /ko
   script#devices-overview(type="text/html")
-    // ko with: {available: ko.observable(false), unconfigured: $data}
+    // ko with: {unconfigured: $data, available: $parent.available}
     dt Devices
       button.btn.btn-xs.btn-default.pull-right(data-bind="click: function(data) {data.available(!data.available());}, visible: unconfigured.length") 
         span(data-bind="text: (available() ? 'Close' : 'Available')")
