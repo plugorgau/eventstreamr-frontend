@@ -169,29 +169,23 @@ block content
                 span(data-bind="editable: roles, editableOptions: {display: roleDisplay, type: 'checklist', source: availableRoles, pk: 'unused', name: 'unused', url: '/api/station/' + macaddress + '/partial', params: {key: 'settings.roles'}}")
             dt Status 
             dd
-              ul.list-unstyled
-                div(data-bind="foreach: {data: activeStatus(station) || [], as:'device'}")
-                  li
-                    span.label.label-info {{state}}
-                    |  {{runcount}} 
-                    // ko if: running
-                    span.glyphicon.glyphicon-thumbs-up
-                    // /ko
-                    // ko ifnot: running
-                    span.glyphicon.glyphicon-thumbs-down
-                    // /ko
-                    |  
-                    strong {{id}} 
-                    |  
-                    small {{type}}
-                    // ko ifnot: running
-                    |  
-                    small {{status}}
-                    | 
-                    // /ko
-                    // ko if: status() == 'starting'
-                    span.fa.fa-spinner.fa-spin
-                    | 
-                    // /ko
-
+              table.table.table-condensed
+                thead
+                  tr
+                    th state
+                    th runcount
+                    th service
+                    th type
+                tbody(data-bind="foreach: {data: activeStatus(station) || [], as:'device'}")
+                  tr(data-bind="attr: {class: ((device.running && running())  ? 'success' : 'danger')}")
+                    td(data-bind="if: device.state")
+                      | {{state}}
+                    td(data-bind="if: device.runcount")
+                      | {{runcount}}
+                    th(scope="row", data-bind="if: device.state") 
+                      | {{id}}
+                    td(data-bind="if: device.type")
+                      | {{type}}
+                    
+          
     // /ko
