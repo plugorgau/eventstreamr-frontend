@@ -44,7 +44,7 @@ var availableDevices = function(station) {
       });
       
       var availableDevices = allDevices.filter(function(item) {
-        if (configuredDevices.indexOf(Object.keys(item)[0]) == -1) {
+        if (configuredDevices.indexOf(item.id()) == -1) {
           return item;
         }
       });
