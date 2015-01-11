@@ -121,7 +121,7 @@ router.post("/:macaddress", function(req, res) {
     if (doc) {
       if (doc.ip !== req.ip) {
         db.updateRaw('stations', { ip: req.ip }, { $unset: { ip: true } }, function () {});
-        db.updateRaw('stations', { "settings.macaddress": macaddress }, { $set: { ip: req.ip } }, function () {});
+        db.updateRaw('stations', { "settings.macaddress": req.params.macaddress }, { $set: { ip: req.ip } }, function () {});
       }
       res.status(200).send(doc);
     }
