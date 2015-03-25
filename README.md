@@ -1,7 +1,7 @@
 eventstreamr-frontend
 =====================
 
-AV Conductor is a frontend for the AV Orchestraion project.
+AV Conductor is a frontend for the AV Orchestration project.
 
 https://github.com/plugorgau/eventstreamr
 
@@ -15,4 +15,10 @@ Installation
 
 $ git clone git@github.com:plugorgau/eventstreamr-frontend.git
 
-$ cd eventstreamr-frontend && npm install
+$ cd eventstreamr-frontend && sudo npm install
+
+## Running the frontend
+
+$ node bin/www
+
+go to http://localhost:5001
