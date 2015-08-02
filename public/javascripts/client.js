@@ -4,7 +4,8 @@ var availableRoles = [
   {value: 'ingest', text: 'ingest'},
   {value: 'mixer', text: 'mixer'},
   {value: 'record', text: 'record'},
-  {value: 'stream', text: 'stream'}
+  {value: 'stream', text: 'stream'},
+  {value: 'youtube', text: 'youtube'}
 ];
 
 //-- yuck
