@@ -104,6 +104,24 @@ block content
                 dt Stream
                 dd(data-bind="with: {stream: station.settings.stream.stream || '', macaddress: station.settings.macaddress() } ")
                   span(data-bind="editable: stream, editableOptions: {pk: 'unused', name: 'unused', url: '/api/station/' + macaddress + '/partial', params: {key: 'settings.stream.stream'}}")
+            dt YouTube
+            dd
+              dl(style="margin-left: 10px;margin-top: 0px;" )
+                dt URL
+                dd(data-bind="with: {host: station.settings.youtube.url || '', macaddress: station.settings.macaddress() } ")
+                  span(data-bind="editable: host, editableOptions: {pk: 'unused', name: 'unused', url: '/api/station/' + macaddress + '/partial', params: {key: 'settings.youtube.url'}}")
+                dt Key
+                dd(data-bind="with: {password: station.settings.youtube.key || '', macaddress: station.settings.macaddress() } ")
+                  span(data-bind="editable: password, editableOptions: {pk: 'unused', name: 'unused', url: '/api/station/' + macaddress + '/partial', params: {key: 'settings.youtube.key'}}")
+                dt Preset
+                dd(data-bind="with: {port: station.settings.youtube.preset || '', macaddress: station.settings.macaddress() } ")
+                  span(data-bind="editable: port, editableOptions: {pk: 'unused', name: 'unused', url: '/api/station/' + macaddress + '/partial', params: {key: 'settings.youtube.preset'}}")
+                dt Bit Rate
+                dd(data-bind="with: {stream: station.settings.youtube.bitrate || '', macaddress: station.settings.macaddress() } ")
+                  span(data-bind="editable: stream, editableOptions: {pk: 'unused', name: 'unused', url: '/api/station/' + macaddress + '/partial', params: {key: 'settings.youtube.bitrate'}}")
+                dt FPS
+                dd(data-bind="with: {stream: station.settings.youtube.fps || '', macaddress: station.settings.macaddress() } ")
+                  span(data-bind="editable: stream, editableOptions: {pk: 'unused', name: 'unused', url: '/api/station/' + macaddress + '/partial', params: {key: 'settings.youtube.fps'}}")
             dt Mixer
             dd
               dl(style="margin-left: 10px;margin-top: 0px;" )
